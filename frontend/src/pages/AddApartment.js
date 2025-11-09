@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
 import "../styles/AddApartment.css";
+import api from "../api";
 
 const AddApartment = () => {
   const [name,setName] = useState("");
@@ -10,7 +10,7 @@ const AddApartment = () => {
   const submit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/apartments", { name, floor: Number(floor) }, { headers:{ Authorization:`Bearer ${user?.token}`}});
+      await api.post("/api/apartments", { name, floor: Number(floor) }, { headers:{ Authorization:`Bearer ${user?.token}`}});
       setName(""); setFloor("");
       alert("Apartment added");
     } catch (err) {

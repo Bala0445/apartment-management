@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api";
 import "../styles/Maintenance.css";
 
 const Maintenance = () => {
@@ -10,12 +10,12 @@ const Maintenance = () => {
   useEffect(() => {
     const fetch = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/maintenance", { headers:{ Authorization:`Bearer ${user?.token}`}});
+        const res = await api.get("/api/maintenance", { headers:{ Authorization:`Bearer ${user?.token}`}});
         setRequests(res.data);
       } catch (err) { console.error(err); }
     };
     fetch();
-    const es = new EventSource("http://localhost:5000/sse/maintenance");
+    const es = new EventSource("/sse/maintenance");
     es.onmessage = e => { try { setRequests(JSON.parse(e.data)); } catch {} };
     return () => es.close();
   }, []);
@@ -23,7 +23,7 @@ const Maintenance = () => {
   const submit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/maintenance", { apartment: form.apartment, floor: Number(form.floor), request: form.request }, { headers:{ Authorization:`Bearer ${user?.token}`}});
+      await api.post("/api/maintenance", { apartment: form.apartment, floor: Number(form.floor), request: form.request }, { headers:{ Authorization:`Bearer ${user?.token}`}});
       setForm({ apartment:"", floor:"", request:"" });
     } catch (err) { console.error(err); alert(err.response?.data?.message || "Error"); }
   };

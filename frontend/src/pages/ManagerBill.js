@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api";
 import "../styles/Bills.css";
 
 const ManagerBill = () => {
@@ -9,14 +9,14 @@ const ManagerBill = () => {
 
   useEffect(() => {
     fetchBills();
-    const es = new EventSource("http://localhost:5000/sse/bills");
+    const es = new EventSource("/sse/bills");
     es.onmessage = e => { try { setBills(JSON.parse(e.data)); } catch {} };
     return () => es.close();
   }, []);
 
   const fetchBills = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/bills", { headers:{ Authorization:`Bearer ${user?.token}`}});
+      const res = await api.get("/api/bills", { headers:{ Authorization:`Bearer ${user?.token}`}});
       setBills(res.data);
     } catch (err) { console.error(err); }
   };
@@ -24,7 +24,7 @@ const ManagerBill = () => {
   const create = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/bills", { apartment: form.apartment, floor: Number(form.floor), rent: Number(form.rent), maintenance: Number(form.maintenance) }, { headers:{ Authorization:`Bearer ${user?.token}`}});
+      await api.post("/api/bills", { apartment: form.apartment, floor: Number(form.floor), rent: Number(form.rent), maintenance: Number(form.maintenance) }, { headers:{ Authorization:`Bearer ${user?.token}`}});
       setForm({ apartment:"", floor:"", rent:"", maintenance:"" });
     } catch (err) { console.error(err); alert(err.response?.data?.message || "Error"); }
   };
@@ -32,7 +32,7 @@ const ManagerBill = () => {
   const remove = async (id) => {
     if (!window.confirm("Delete this bill?")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/bills/${id}`, { headers:{ Authorization:`Bearer ${user?.token}`}});
+      await api.delete(`/api/bills/${id}`, { headers:{ Authorization:`Bearer ${user?.token}`}});
     } catch (err) { console.error(err); }
   };
 

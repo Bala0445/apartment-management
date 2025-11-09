@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import axios from "axios";
 import "../styles/Login.css";
+import api from "../api";
 
 const Login = () => {
   const nav = useNavigate();
@@ -14,7 +14,7 @@ const Login = () => {
     e.preventDefault();
     try {
       // call backend login for tokens (backend has manager hardcoded)
-      const { data } = await axios.post("http://localhost:5000/api/users/login", { username, password });
+      const { data } = await api.post("/api/users/login", { username, password });
       localStorage.setItem("user", JSON.stringify(data));
       if (data.role === "manager") nav("/manager/apartments");
       else nav("/tenant/apartments");

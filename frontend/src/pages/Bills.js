@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import "../styles/Bills.css";
+import api from "../api";
 
 const Bills = () => {
   const [bills, setBills] = useState([]);
@@ -8,12 +8,12 @@ const Bills = () => {
     const user = JSON.parse(localStorage.getItem("user")) || null;
     const fetch = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/bills", { headers:{ Authorization:`Bearer ${user?.token}`}});
+        const res = await api.get("/api/bills", { headers:{ Authorization:`Bearer ${user?.token}`}});
         setBills(res.data);
       } catch (err) { console.error(err); }
     };
     fetch();
-    const es = new EventSource("http://localhost:5000/sse/bills");
+    const es = new EventSource("/sse/bills");
     es.onmessage = e => { try { setBills(JSON.parse(e.data)); } catch {} };
     return () => es.close();
   }, []);
